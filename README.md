@@ -225,9 +225,12 @@ PYTHONPATH=src python3 -m volunteer_handover.main --out out --baseline data/prev
 
 ## 这个项目怎么卖
 
-报价单在 [QUOTATION.md](QUOTATION.md)：六种计价方式的对比、33 人天的明细、
-效果浮动的写死公式、以及"哪些钱不赚"（写回、外发、自动指派一律不做）。
-一句话：**按结果浮动，但只对"核对工时"这一项浮动**——归因不干净的数字不进公式。
+报价单一页看完——六种计价方式里为什么只用一种、三档各卖什么、哪些钱不赚：
+
+<a href="docs/04-quotation.md"><img src="docs/pricing.svg" alt="报价：六种计价方式的对比与推荐方案" width="900"></a>
+
+完整条款（33 人天明细、浮动公式与算例、验收与变更规则）在 [docs/04-quotation.md](docs/04-quotation.md)。
+一句话原则：**按结果浮动，但只对"核对工时"这一项浮动**——归因不干净的数字不进公式。
 
 ## 目录
 
@@ -257,6 +260,7 @@ volunteer-handover/
 │   ├── 03-flow-as-is.svg    # 现状流程：错在哪一步最贵（脚本生成）
 │   ├── 03-flow-to-be.svg    # 转型后流程：工具做哪几处、谁签字（脚本生成）
 │   ├── 04-quotation.md      # 报价单：计价方式、明细、浮动公式、条款
+│   ├── pricing.svg          # 报价一页图（脚本生成，README 里嵌的就是它）
 │   ├── 05-solution.md       # 设计方案：架构、九条校验、人机四层、实施路线
 │   ├── workflow.md          # 人的流程摊开 + 出错代价排序 + 切改三档
 │   ├── discovery-flow.svg   # 需求发现与验证：AI 在哪一步、人在哪里签字（由脚本生成）

@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="996" viewBox="0 0 1040 996" font-family="-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',Arial,sans-serif">
+<defs><style>.ink{fill:#0f172a}.muted{fill:#64748b}.eyebrow{font-size:12px;font-weight:700;letter-spacing:.5px;fill:#2563eb}.h1{font-size:30px;font-weight:700;fill:#0f172a}.h2{font-size:13.5px;fill:#475569}.th{font-size:11.5px;font-weight:700;fill:#1e293b}.cell{font-size:11.5px;fill:#334155}.cellb{font-size:11.5px;font-weight:600;fill:#0f172a}.badge{font-size:11px;font-weight:700}.plan{font-size:12px;font-weight:700;fill:#0f172a}.price{font-size:22px;font-weight:700;fill:#1d4ed8}.small{font-size:11px;fill:#475569}.foot{font-size:11px;fill:#94a3b8}</style></defs><rect x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
+<rect x="20" y="20" width="1000" height="956" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+<text class="eyebrow" x="40" y="62">报价 · 计价模式</text>
+<text class="h1" x="40" y="102">六种计价方式，我们只用一种</text>
+<text class="h2" x="40" y="128">判断标准只有一条：客户能不能用这个价，算出自己省了多少。算不出来的，在 AI 时代一定被压价。</text>
+<rect x="40" y="150" width="960" height="44" rx="8" fill="#f1f5f9"/>
+<text class="th" x="54" y="178">计价方式</text>
+<text class="th" x="250" y="178">客户买的是什么</text>
+<text class="th" x="496" y="178">最大的坑</text>
+<text class="th" x="802" y="178">本项目判断</text>
+<line x1="40" y1="252" x2="1000" y2="252" stroke="#e8edf3"/>
+<text class="cellb" x="54" y="229">人天 / T&amp;M</text>
+<text class="cell" x="250" y="229">你的时间</text>
+<text class="cell" x="496" y="229">变更失控吃掉毛利；AI 时代最容易被比价</text>
+<rect x="802" y="211" width="150" height="24" rx="12" fill="#fef2f2" stroke="#fecaca"/>
+<text class="badge" x="877" y="227" text-anchor="middle" fill="#b91c1c">不推荐</text>
+<rect x="40" y="252" width="960" height="58" fill="#fafbfc"/>
+<line x1="40" y1="310" x2="1000" y2="310" stroke="#e8edf3"/>
+<text class="cellb" x="54" y="287">功能点 / 规模</text>
+<text class="cell" x="250" y="287">可枚举的功能范围</text>
+<text class="cell" x="496" y="287">功能点认定有争议，需要权威标准</text>
+<rect x="802" y="269" width="150" height="24" rx="12" fill="#f1f5f9" stroke="#e2e8f0"/>
+<text class="badge" x="877" y="285" text-anchor="middle" fill="#64748b">不适用</text>
+<line x1="40" y1="368" x2="1000" y2="368" stroke="#e8edf3"/>
+<text class="cellb" x="54" y="345">固定总价 / 整包</text>
+<text class="cell" x="250" y="345">一个确定的结果</text>
+<text class="cell" x="496" y="345">范围蔓延直接吃掉毛利</text>
+<rect x="802" y="327" width="150" height="24" rx="12" fill="#fffbeb" stroke="#fde68a"/>
+<text class="badge" x="877" y="343" text-anchor="middle" fill="#a16207">只用于闭口包</text>
+<rect x="40" y="368" width="960" height="58" fill="#fafbfc"/>
+<line x1="40" y1="426" x2="1000" y2="426" stroke="#e8edf3"/>
+<text class="cellb" x="54" y="403">订阅 / 年费</text>
+<text class="cell" x="250" y="403">持续可用的能力</text>
+<text class="cell" x="496" y="403">客户不续费 = 收入归零</text>
+<rect x="802" y="385" width="150" height="24" rx="12" fill="#f1f5f9" stroke="#e2e8f0"/>
+<text class="badge" x="877" y="401" text-anchor="middle" fill="#64748b">二期再说</text>
+<line x1="40" y1="484" x2="1000" y2="484" stroke="#e8edf3"/>
+<text class="cellb" x="54" y="461">用量计费</text>
+<text class="cell" x="250" y="461">用得越多付越多</text>
+<text class="cell" x="496" y="461">客户成本不可控，范围风险归我们</text>
+<rect x="802" y="443" width="150" height="24" rx="12" fill="#fffbeb" stroke="#fde68a"/>
+<text class="badge" x="877" y="459" text-anchor="middle" fill="#a16207">备选 2,400/批</text>
+<rect x="40" y="484" width="960" height="58" fill="#fafbfc"/>
+<line x1="40" y1="542" x2="1000" y2="542" stroke="#e8edf3"/>
+<text class="cellb" x="54" y="519">效果付费 / 分成</text>
+<text class="cell" x="250" y="519">可验证的业务结果</text>
+<text class="cell" x="496" y="519">基线不稳、归因扯皮、客户控制变量</text>
+<rect x="802" y="501" width="150" height="24" rx="12" fill="#fffbeb" stroke="#fde68a"/>
+<text class="badge" x="877" y="517" text-anchor="middle" fill="#a16207">只对工时分成</text>
+<rect x="40" y="542" width="960" height="58" fill="#f5f7ff"/>
+<rect x="40" y="542" width="4" height="58" fill="#6366f1"/>
+<line x1="40" y1="600" x2="1000" y2="600" stroke="#e8edf3"/>
+<text class="cellb" x="54" y="577">基础费 + 效果浮动</text>
+<text class="cell" x="250" y="577">交付能力 + 结果红利</text>
+<text class="cell" x="496" y="577">公式必须事先写死，否则事后全靠谈</text>
+<rect x="802" y="559" width="150" height="24" rx="12" fill="#eef2ff" stroke="#c7d2fe"/>
+<text class="badge" x="877" y="575" text-anchor="middle" fill="#3730a3">推荐</text>
+<text class="th" x="40" y="634">三档怎么买</text>
+<rect x="40" y="646" width="309" height="118" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.3"/>
+<text class="plan" x="58" y="672">诊断包</text>
+<text class="price" x="58" y="704">¥68,000</text>
+<text class="small" x="58" y="728">W0 一项：访谈复盘、事实台账</text>
+<text class="small" x="58" y="745">需求假设 + 门禁草案</text>
+<text class="small" x="58" y="762">结论：值不值得做</text>
+<rect x="365" y="646" width="309" height="118" rx="12" fill="#f8faff" stroke="#c7d2fe" stroke-width="1.3"/>
+<text class="plan" x="383" y="672">试点包 ★</text>
+<text class="price" x="383" y="704">¥198,000</text>
+<text class="small" x="383" y="728">W0–W4 全部，33 人天</text>
+<text class="small" x="383" y="745">含金标回放与复盘</text>
+<text class="small" x="383" y="762">浮动另计 ≤ ¥60,000</text>
+<rect x="690" y="646" width="309" height="118" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.3"/>
+<text class="plan" x="708" y="672">扩展包</text>
+<text class="price" x="708" y="704">¥120,000 起</text>
+<text class="small" x="708" y="728">换业务域复用框架</text>
+<text class="small" x="708" y="745">门禁与模板直接沿用</text>
+<text class="small" x="708" y="762">18 人天起</text>
+<rect x="40" y="794" width="960" height="60" rx="10" fill="#f0fdf4" stroke="#bbf7d0"/>
+<text class="th" x="58" y="819" fill="#15803d">效果浮动（只对核对工时）</text>
+<text class="small" x="58" y="839">浮动 = (H0 − H1) × 年批次 × ¥180 × 20%，上限 ¥60,000；H1 ≥ H0 时为 0，不倒扣</text>
+<text class="small" x="982" y="839" text-anchor="end" fill="#15803d">算例：(18−9)×40×180×20% = ¥12,960</text>
+<text class="th" x="40" y="886">这些钱不赚（写进合同）</text>
+<rect x="40" y="900" width="110" height="28" rx="14" fill="#fff7ed" stroke="#fed7aa"/>
+<text class="small" x="95.0" y="918" text-anchor="middle" fill="#c2410c">不写回任何系统</text>
+<rect x="162" y="900" width="98" height="28" rx="14" fill="#fff7ed" stroke="#fed7aa"/>
+<text class="small" x="211.0" y="918" text-anchor="middle" fill="#c2410c">不发外部消息</text>
+<rect x="272" y="900" width="146" height="28" rx="14" fill="#fff7ed" stroke="#fed7aa"/>
+<text class="small" x="345.0" y="918" text-anchor="middle" fill="#c2410c">不自动指派医疗/安保</text>
+<rect x="430" y="900" width="134" height="28" rx="14" fill="#fff7ed" stroke="#fed7aa"/>
+<text class="small" x="497.0" y="918" text-anchor="middle" fill="#c2410c">不判定“交接完成”</text>
+<text class="foot" x="40" y="952">单位：人民币。数字为演练示例，不代表真实商务承诺；完整条款见 docs/04-quotation.md。</text>
+<text class="foot" x="40" y="970">本图由 scripts/make_pricing_card.py 生成，改价格请改脚本，不要手改 SVG。</text>
+</svg>

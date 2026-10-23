@@ -22,7 +22,9 @@ PYTHONPATH=src "$PY" -c "import volunteer_handover.main"
 echo "    导入 OK"
 
 # 流程图是脚本生成的。有人手改 SVG 就会和脚本对不上，这里当场拦住。
-for pair in "docs/flowchart.svg:scripts/make_flowchart.py" "docs/discovery-flow.svg:scripts/make_discovery_flow.py"; do
+for pair in "docs/flowchart.svg:scripts/make_flowchart.py" \
+            "docs/discovery-flow.svg:scripts/make_discovery_flow.py" \
+            "docs/pricing.svg:scripts/make_pricing_card.py"; do
   SVG="${pair%%:*}"; GEN="${pair##*:}"
   FC_BAK="$(mktemp)"
   cp "$SVG" "$FC_BAK"

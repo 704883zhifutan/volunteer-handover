@@ -5,6 +5,8 @@
 ## [Unreleased]
 
 ### Added
+- `docs/flowchart.svg` + `scripts/make_flowchart.py`：完整流程图（18 步 / 6 个人工判断点 /
+  4 个签字节点），由脚本生成，`build.sh` 与 CI 都会检查"图是否被手改"。
 - `docs/workflow.md`：把人的流程摊成 8 步（7 步在班次时间线上），按"后果 × 发现难度 × 频次"
   排出出错代价，再按代价从高到低决定谁做——A 确定性核对 / B 人机配合 / C 不碰。
 - `docs/flow.svg` + README「一眼看清」小节：一张流程图，画清 7 个环节、错误后果、

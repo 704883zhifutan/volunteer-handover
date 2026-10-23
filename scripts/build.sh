@@ -16,10 +16,22 @@ if sys.version_info < (3, 9):
 print(f"    Python {sys.version.split()[0]} OK")
 EOF
 
-echo "==> 2/5 语法与导入"
+echo "==> 2/5 语法、导入、图表与脚本一致"
 "$PY" scripts/check_syntax.py
 PYTHONPATH=src "$PY" -c "import volunteer_handover.main"
 echo "    导入 OK"
+
+# 流程图是脚本生成的。有人手改 SVG 就会和脚本对不上，这里当场拦住。
+FC_BAK="$(mktemp)"
+cp docs/flowchart.svg "$FC_BAK"
+"$PY" scripts/make_flowchart.py > /dev/null
+if ! cmp -s docs/flowchart.svg "$FC_BAK"; then
+  cp "$FC_BAK" docs/flowchart.svg
+  echo "    docs/flowchart.svg 与 scripts/make_flowchart.py 不一致（手改过？）"
+  echo "    改流程请改脚本里的 NODES，然后重新生成"
+  exit 1
+fi
+echo "    流程图与脚本一致 OK"
 
 echo "==> 3/5 单元测试"
 "$PY" -m unittest discover -s tests -t tests 2>&1 | tail -3

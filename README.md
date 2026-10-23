@@ -206,6 +206,23 @@ PYTHONPATH=src python3 -m volunteer_handover.main --out out --baseline data/prev
 | 缺列时"尽力而为" | `core/schema.py`：缺必需列直接 blocked（本次不出结论），缺可选列跳过并告警 |
 | 替人做复核结论 | `core/review.py`：状态只认 已确认/已驳回/转人工队列，且必须有复核人 |
 
+## 文档地图：五份材料，五个问题
+
+做业务发现最怕的是"材料很多，但没人能回答一个具体问题"。仓库里的五份主文档各答一个：
+
+| 编号 | 文档 | 回答什么 |
+|---|---|---|
+| **01** | [业务挖掘](docs/01-discovery.md) | 六个人各说了什么？哪些是事实、哪些还只是假设 |
+| **02** | [行业分析（docx）](docs/02-industry-analysis.docx) | 外面发生了什么：政策、趋势、竞争与替代方案 |
+| **03** | [现状流程](docs/03-flow-as-is.svg) · [转型后流程](docs/03-flow-to-be.svg) | 现在错在哪一步最贵？改完谁做、谁签字 |
+| **04** | [报价单](docs/04-quotation.md) | 怎么计价、浮动怎么算死、哪些钱不赚 |
+| **05** | [设计方案](docs/05-solution.md) | 怎么建、怎么验、分几期、风险在哪 |
+
+参考材料（写代码时看的）：[design.md](docs/design.md) 设计取舍 ·
+[api.md](docs/api.md) 数据契约 · [gates.md](docs/gates.md) 三门禁 ·
+[workflow.md](docs/workflow.md) 人肉流程与代价 · [flowchart.svg](docs/flowchart.svg) 全流程 ·
+[discovery-flow.svg](docs/discovery-flow.svg) 结论怎么来的。
+
 ## 这个项目怎么卖
 
 报价单在 [QUOTATION.md](QUOTATION.md)：六种计价方式的对比、33 人天的明细、
@@ -235,6 +252,12 @@ volunteer-handover/
 │   │   └── engine.py        # 编排
 │   └── utils/               # 配置解析、CSV、审计日志
 ├── docs/
+│   ├── 01-discovery.md      # 业务挖掘：六角色、事实台账、六条需求假设、证据缺口
+│   ├── 02-industry-analysis.docx # 行业分析（Word）
+│   ├── 03-flow-as-is.svg    # 现状流程：错在哪一步最贵（脚本生成）
+│   ├── 03-flow-to-be.svg    # 转型后流程：工具做哪几处、谁签字（脚本生成）
+│   ├── 04-quotation.md      # 报价单：计价方式、明细、浮动公式、条款
+│   ├── 05-solution.md       # 设计方案：架构、九条校验、人机四层、实施路线
 │   ├── workflow.md          # 人的流程摊开 + 出错代价排序 + 切改三档
 │   ├── discovery-flow.svg   # 需求发现与验证：AI 在哪一步、人在哪里签字（由脚本生成）
 │   ├── flow.svg             # 人手流程 × 出错代价（7 步，一眼看清先切哪）

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1216" viewBox="0 0 1000 1216" font-family="-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',Arial,sans-serif">
+<defs><style>.h1{font-size:20px;font-weight:700;fill:#0f172a}.h2{font-size:12.5px;fill:#64748b}.note{font-size:11.5px;fill:#475569}.title{font-size:13.5px;font-weight:600;fill:#1f2937}.who{font-size:11px;fill:#6b7280}.sub{font-size:11.5px;fill:#4b5563}.nt{font-size:11.5px;font-weight:600}.ns{font-size:11px;fill:#4b5563}.foot{font-size:11px;fill:#6b7280}</style><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker></defs><rect x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
+<text class="h1" x="40" y="52">现状：志愿者班次是怎么跑的，错在哪一步最贵</text>
+<text class="h2" x="40" y="78">7 个环节 · 全部靠人 · 信息散在群消息、排班表、文件库里</text>
+<rect x="40" y="94" width="920" height="34" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="note" x="56" y="116">范围：岗位需求 → 现场交接 → 客户协同。代价 = 后果 × 发现难度 × 频次。</text>
+<rect x="60" y="150" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="180">01　岗位需求与结构</text>
+<text class="who" x="512" y="180" text-anchor="end">业务负责人 · 顾明岚</text>
+<text class="sub" x="82" y="204">凭经验估点位与人头，缺口事后才知道</text>
+<text class="sub" x="82" y="223">医疗/安保岗位也要来，但不在试点内</text>
+<rect x="560" y="150" width="380" height="96" rx="12" fill="#fffbeb" stroke="#fde68a" stroke-width="1.3"/>
+<text class="nt" x="578" y="180" fill="#a16207">错在：没有需求底稿</text>
+<text class="ns" x="578" y="203">点位与人头靠口口相传，换人就重来</text>
+<text class="ns" x="578" y="222">代价：中高</text>
+<line x1="536" y1="198" x2="552" y2="198" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="246" x2="100" y2="271" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="280" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="310">02　人员匹配与排班</text>
+<text class="who" x="512" y="310" text-anchor="end">流程协调员 + 现场协调员</text>
+<text class="sub" x="82" y="334">群消息里口头调人，排班表事后补</text>
+<text class="sub" x="82" y="353">同一人可能被安排到两个点位</text>
+<rect x="560" y="280" width="380" height="96" rx="12" fill="#fef2f2" stroke="#fecaca" stroke-width="1.3"/>
+<text class="nt" x="578" y="310" fill="#b91c1c">错在：替补没有唯一登记</text>
+<text class="ns" x="578" y="333">谁替谁、替到哪，只在聊天记录里</text>
+<text class="ns" x="578" y="352">代价：最高</text>
+<line x1="536" y1="328" x2="552" y2="328" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="376" x2="100" y2="401" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="410" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="440">03　班次确认与发布</text>
+<text class="who" x="512" y="440" text-anchor="end">流程协调员 · 唐映秋</text>
+<text class="sub" x="82" y="464">版本靠文件名区分，旧版覆盖新版</text>
+<text class="sub" x="82" y="483">确认状态没有地方落</text>
+<rect x="560" y="410" width="380" height="96" rx="12" fill="#fffbeb" stroke="#fde68a" stroke-width="1.3"/>
+<text class="nt" x="578" y="440" fill="#a16207">错在：版本没有有效期概念</text>
+<text class="ns" x="578" y="463">“最新版”靠人记，作废不写原因</text>
+<text class="ns" x="578" y="482">代价：中高</text>
+<line x1="536" y1="458" x2="552" y2="458" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="506" x2="100" y2="531" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="540" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="570">04　现场签到与到岗</text>
+<text class="who" x="512" y="570" text-anchor="end">志愿者 · 当班人</text>
+<text class="sub" x="82" y="594">签到靠纸质或群消息接龙</text>
+<text class="sub" x="82" y="613">缺岗本身不产生任何记录</text>
+<rect x="560" y="540" width="380" height="96" rx="12" fill="#fef2f2" stroke="#fecaca" stroke-width="1.3"/>
+<text class="nt" x="578" y="570" fill="#b91c1c">错在：缺岗是“没有数据”</text>
+<text class="ns" x="578" y="593">没人签到＝没人发现</text>
+<text class="ns" x="578" y="612">代价：高</text>
+<line x1="536" y1="588" x2="552" y2="588" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="636" x2="100" y2="661" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="670" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="700">05　现场交接</text>
+<text class="who" x="512" y="700" text-anchor="end">交班人 → 接班人</text>
+<text class="sub" x="82" y="724">口头交接待办事项，截止时间说不清</text>
+<text class="sub" x="82" y="743">未结项随人走，不留痕</text>
+<rect x="560" y="670" width="380" height="96" rx="12" fill="#fef2f2" stroke="#fecaca" stroke-width="1.3"/>
+<text class="nt" x="578" y="700" fill="#b91c1c">错在：责任不落地</text>
+<text class="ns" x="578" y="723">投诉时才发现“以为交过了”</text>
+<text class="ns" x="578" y="742">代价：最高</text>
+<line x1="536" y1="718" x2="552" y2="718" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="766" x2="100" y2="791" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="800" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="830">06　异常补录</text>
+<text class="who" x="512" y="830" text-anchor="end">全员</text>
+<text class="sub" x="82" y="854">先群里说，后补表；回填时间当发生时间</text>
+<text class="sub" x="82" y="873">补录格式各不相同</text>
+<rect x="560" y="800" width="380" height="96" rx="12" fill="#fffbeb" stroke="#fde68a" stroke-width="1.3"/>
+<text class="nt" x="578" y="830" fill="#a16207">错在：时间只有一份</text>
+<text class="ns" x="578" y="853">事后分不清“几点发生”和“几点补”</text>
+<text class="ns" x="578" y="872">代价：中</text>
+<line x1="536" y1="848" x2="552" y2="848" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="896" x2="100" y2="921" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="930" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="960">07　客户协同与对外</text>
+<text class="who" x="512" y="960" text-anchor="end">客户协同代表 · 叶书</text>
+<text class="sub" x="82" y="984">对外口径靠个人记忆</text>
+<text class="sub" x="82" y="1003">容易承诺现场做不到的事</text>
+<rect x="560" y="930" width="380" height="96" rx="12" fill="#fef2f2" stroke="#fecaca" stroke-width="1.3"/>
+<text class="nt" x="578" y="960" fill="#b91c1c">错在：口径无版本</text>
+<text class="ns" x="578" y="983">同一件事两种说法，客户先信哪一种</text>
+<text class="ns" x="578" y="1002">代价：最高</text>
+<line x1="536" y1="978" x2="552" y2="978" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="40" y="1074" width="920" height="88" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="foot" x="58" y="1098">信息载体：内部服务台 / 业务台账 / 文件库，三套工具之间没有统一编号（f30）。</text>
+<text class="foot" x="58" y="1118">最贵的三步是「人员匹配」「现场交接」「客户协同」：错了当场看不出来，往往在投诉时才暴露。</text>
+<text class="foot" x="58" y="1138">本图由 scripts/make_flow_pair.py 生成；改流程请改脚本里的 AS_IS / TO_BE。</text>
+</svg>

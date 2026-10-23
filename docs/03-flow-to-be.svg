@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1476" viewBox="0 0 1000 1476" font-family="-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',Arial,sans-serif">
+<defs><style>.h1{font-size:20px;font-weight:700;fill:#0f172a}.h2{font-size:12.5px;fill:#64748b}.note{font-size:11.5px;fill:#475569}.title{font-size:13.5px;font-weight:600;fill:#1f2937}.who{font-size:11px;fill:#6b7280}.sub{font-size:11.5px;fill:#4b5563}.nt{font-size:11.5px;font-weight:600}.ns{font-size:11px;fill:#4b5563}.foot{font-size:11px;fill:#6b7280}</style><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker></defs><rect x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
+<text class="h1" x="40" y="52">转型后：同一套流程，工具只做核对，签字仍在人手里</text>
+<text class="h2" x="40" y="78">9 个环节 · 7 处只读信号 · 1 处签字生效 · 1 处明确不碰</text>
+<rect x="40" y="94" width="920" height="34" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="note" x="56" y="116">范围：同一批班次、同一个批次。工具只在“核对”这一步出手，不写回、不发消息、不指派。</text>
+<rect x="60" y="150" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="180">01　岗位需求与结构</text>
+<text class="who" x="512" y="180" text-anchor="end">业务负责人（人定）</text>
+<text class="sub" x="82" y="204">范围先划死：医疗/安保不进试点、不自动指派</text>
+<text class="sub" x="82" y="223">工具只校验范围，不替人做编制</text>
+<rect x="560" y="150" width="380" height="96" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.3"/>
+<text class="nt" x="578" y="180" fill="#334155">工具：校验范围</text>
+<text class="ns" x="578" y="203">配置白名单，越界直接阻断</text>
+<text class="ns" x="578" y="222">仍然：人定编制</text>
+<line x1="536" y1="198" x2="552" y2="198" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="246" x2="100" y2="271" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="280" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="310">02　人员匹配与排班</text>
+<text class="who" x="512" y="310" text-anchor="end">流程协调员 + 现场协调员</text>
+<text class="sub" x="82" y="334">同人同时段多点位 → C2 提示“疑似重复占位”</text>
+<text class="sub" x="82" y="353">顶班关系登记到人，谁替谁可查</text>
+<rect x="560" y="280" width="380" height="96" rx="12" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1.3"/>
+<text class="nt" x="578" y="310" fill="#6d28d9">工具：C2 占位冲突</text>
+<text class="ns" x="578" y="333">只提示，不自动改排班</text>
+<text class="ns" x="578" y="352">仍然：人决定怎么调</text>
+<line x1="536" y1="328" x2="552" y2="328" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="376" x2="100" y2="401" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="410" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="440">03　班次确认与发布</text>
+<text class="who" x="512" y="440" text-anchor="end">流程协调员 · 唐映秋</text>
+<text class="sub" x="82" y="464">版本有效期 + 确认状态双条件；作废保留原因</text>
+<text class="sub" x="82" y="483">过期版本不得覆盖已确认新版</text>
+<rect x="560" y="410" width="380" height="96" rx="12" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1.3"/>
+<text class="nt" x="578" y="440" fill="#6d28d9">工具：C4 版本有效性</text>
+<text class="ns" x="578" y="463">“最新”由字段判定，不看文件名</text>
+<text class="ns" x="578" y="482">仍然：人确认发布</text>
+<line x1="536" y1="458" x2="552" y2="458" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="506" x2="100" y2="531" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="540" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="570">04　现场签到与到岗</text>
+<text class="who" x="512" y="570" text-anchor="end">当班人（L1）</text>
+<text class="sub" x="82" y="594">排班与签到交叉比对：缺岗、点位/人员不一致</text>
+<text class="sub" x="82" y="613">签到有、排班无 → 计划外到岗（顶班）</text>
+<rect x="560" y="540" width="380" height="96" rx="12" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1.3"/>
+<text class="nt" x="578" y="570" fill="#6d28d9">工具：C1 交叉比对</text>
+<text class="ns" x="578" y="593">每条带 文件#行号</text>
+<text class="ns" x="578" y="612">读到 0 行 ≠ 没读到：跳过要说清</text>
+<line x1="536" y1="588" x2="552" y2="588" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="636" x2="100" y2="661" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="670" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="700">05　现场交接</text>
+<text class="who" x="512" y="700" text-anchor="end">交班人 → 接班人</text>
+<text class="sub" x="82" y="724">交接责任清单：版本 / 未结项 / 截止 / 责任人</text>
+<text class="sub" x="82" y="743">未签收、同一人交接、逾期未结 全部标出</text>
+<rect x="560" y="670" width="380" height="96" rx="12" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1.3"/>
+<text class="nt" x="578" y="700" fill="#6d28d9">工具：C5 交接清单</text>
+<text class="ns" x="578" y="723">不判定“完成”（G3 未定义）</text>
+<text class="ns" x="578" y="742">只给可核对的信号</text>
+<line x1="536" y1="718" x2="552" y2="718" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="766" x2="100" y2="791" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="800" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="830">06　当班核对与签字</text>
+<text class="who" x="512" y="830" text-anchor="end">L1 核对 → L2 确认</text>
+<text class="sub" x="82" y="854">建议只提示，不覆盖原始值</text>
+<text class="sub" x="82" y="873">核对结论回填 review.csv，缺复核人即不生效</text>
+<rect x="560" y="800" width="380" height="96" rx="12" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.3"/>
+<text class="nt" x="578" y="830" fill="#3730a3">人：签字生效</text>
+<text class="ns" x="578" y="853">工具无审批权，模型无审批权</text>
+<text class="ns" x="578" y="872">仍然：人负责</text>
+<line x1="536" y1="848" x2="552" y2="848" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="896" x2="100" y2="921" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="930" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="960">07　异常补录</text>
+<text class="who" x="512" y="960" text-anchor="end">全员</text>
+<text class="sub" x="82" y="984">业务发生时间与系统接收时间分离</text>
+<text class="sub" x="82" y="1003">疑似回填只标来源，不预设阈值</text>
+<rect x="560" y="930" width="380" height="96" rx="12" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1.3"/>
+<text class="nt" x="578" y="960" fill="#6d28d9">工具：C3 双时间</text>
+<text class="ns" x="578" y="983">倒挂/回填可定位到行</text>
+<text class="ns" x="578" y="1002">仍然：人确认是否合规</text>
+<line x1="536" y1="978" x2="552" y2="978" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="1026" x2="100" y2="1051" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="1060" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="1090">08　客户协同与对外</text>
+<text class="who" x="512" y="1090" text-anchor="end">客户协同代表 · 叶书</text>
+<text class="sub" x="82" y="1114">系统不出对外消息、不自动承诺</text>
+<text class="sub" x="82" y="1133">对外口径由叶书确认后才发</text>
+<rect x="560" y="1060" width="380" height="96" rx="12" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.3"/>
+<text class="nt" x="578" y="1090" fill="#15803d">边界：不碰</text>
+<text class="ns" x="578" y="1113">代码里没有发送通道</text>
+<text class="ns" x="578" y="1132">仍然：人对外</text>
+<line x1="536" y1="1108" x2="552" y2="1108" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="100" y1="1156" x2="100" y2="1181" stroke="#94a3b8" stroke-width="1.3" marker-end="url(#ar)"/>
+<rect x="60" y="1190" width="470" height="96" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text class="title" x="82" y="1220">09　每日复盘</text>
+<text class="who" x="512" y="1220" text-anchor="end">流程协调员</text>
+<text class="sub" x="82" y="1244">批次对比：新增 / 持续 / 消失</text>
+<text class="sub" x="82" y="1263">消失不等于已解决，必须人确认</text>
+<rect x="560" y="1190" width="380" height="96" rx="12" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1.3"/>
+<text class="nt" x="578" y="1220" fill="#6d28d9">工具：批次对比</text>
+<text class="ns" x="578" y="1243">按「校验+类型+对象」比对</text>
+<text class="ns" x="578" y="1262">仍然：人判断扩/收/停</text>
+<line x1="536" y1="1238" x2="552" y2="1238" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="40" y="1334" width="920" height="108" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="foot" x="58" y="1358">工具做的：C1 交叉比对 · C2 占位冲突 · C3 双时间 · C4 版本 · C5 交接清单 · 批次对比——全部只读。</text>
+<text class="foot" x="58" y="1378">人做的：定编制、定怎么调班、确认发布、现场核对（L1）、业务确认（L2）、对外口径。</text>
+<text class="foot" x="58" y="1398">不碰的：写回任何系统、发外部消息、自动指派医疗/安保、判定“交接完成”（G3 未定义）。</text>
+<text class="foot" x="58" y="1418">对照看：现状图里最贵的三步（02 匹配、05 交接、07 协同），转型图在这三处各有一个只读信号。</text>
+</svg>

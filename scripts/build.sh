@@ -34,7 +34,18 @@ for pair in "docs/flowchart.svg:scripts/make_flowchart.py" "docs/discovery-flow.
     exit 1
   fi
 done
-echo "    两张流程图与生成脚本一致 OK"
+echo "    单张流程图与脚本一致 OK"
+
+# 现状 / 转型后两张图由同一个脚本生成，单独比一次
+A="$(mktemp)"; B="$(mktemp)"
+cp docs/03-flow-as-is.svg "$A"; cp docs/03-flow-to-be.svg "$B"
+"$PY" scripts/make_flow_pair.py > /dev/null
+if ! cmp -s docs/03-flow-as-is.svg "$A" || ! cmp -s docs/03-flow-to-be.svg "$B"; then
+  cp "$A" docs/03-flow-as-is.svg; cp "$B" docs/03-flow-to-be.svg
+  echo "    docs/03-flow-*.svg 与 scripts/make_flow_pair.py 不一致（手改过？）"
+  exit 1
+fi
+echo "    流程对照图与脚本一致 OK"
 
 echo "==> 3/5 单元测试"
 "$PY" -m unittest discover -s tests -t tests 2>&1 | tail -3

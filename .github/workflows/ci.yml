@@ -35,7 +35,9 @@ jobs:
         run: |
           python scripts/make_flowchart.py
           python scripts/make_discovery_flow.py
-          git diff --exit-code docs/flowchart.svg docs/discovery-flow.svg
+          python scripts/make_flow_pair.py
+          git diff --exit-code docs/flowchart.svg docs/discovery-flow.svg \
+            docs/03-flow-as-is.svg docs/03-flow-to-be.svg
           echo "流程图由 scripts/make_*.py 生成；手改会被这一步拦下"
 
       - name: 单元测试

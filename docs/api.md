@@ -81,7 +81,7 @@ OI-1;补充冰块至 14:00;2026-10-03T14:00:00;Z0003;未结|OI-2;把对讲机交
 
 ## 2. 输出
 
-`write_outputs(result, out_dir)` 只写 `out/`，共 5 个文件：
+`write_outputs(result, out_dir)` 只写 `out/`，共 7 个文件：
 
 | 文件 | 内容 | 谁看 |
 |---|---|---|
@@ -90,12 +90,61 @@ OI-1;补充冰块至 14:00;2026-10-03T14:00:00;Z0003;未结|OI-2;把对讲机交
 | `handover.md` | 交接责任清单 + 未结项 | 流程协调员 |
 | `snapshots.csv` | 每个输入文件的 sha256、行数、读取状态 | 质量负责人 |
 | `audit.csv` | 谁在什么时候读/导出/确认了什么 | 质量负责人 |
+| `metrics.md` / `metrics.csv` | 误报率、确认率、复核滞后（分母是已复核数，见 §2.1） | 业务负责人 |
+| `score.md` | 金标比对的召回率/精确率与 G1 判定（需 `--gold` 才生成） | 质量负责人 |
 
-`items.csv` 列顺序：
+`items.csv` 列顺序（14 列）：
 
 ```
-序号, 校验, 类型, 对象, 事实, 业务发生, 系统接收, 版本, 来源位置, 建议, 复核状态, 复核人
+编号, 校验, 类型, 对象, 事实, 业务发生时间, 系统接收时间, 依据版本, 来源位置, 建议, 复核状态, 复核人, 复核时间, 相关对象
 ```
+
+`编号` 是**内容指纹**（`F-` + sha1 前 10 位），由 校验/类型/对象/来源位置/双时间/事实 算出。
+不用序号，因为序号会随检查顺序变化，人工回填的复核结论就会挂到别的条目上。
+代价是数据一改编号就变，旧结论对不上——这是故意的：数据变了就该重新确认。
+
+`相关对象` 是机器可读的关联编号（目前只有 C2 占位冲突用它，形如 `S004,S005`），
+金标比对靠它配对，人不用看。
+
+### 2.1 复核回填：`data/review.csv`
+
+清单发出去、人核完，结论必须回到系统里，否则"误报率"永远算不出来。
+
+```csv
+编号,复核状态,复核人,复核时间,备注
+F-963f4385f1,已确认,唐映秋,2026-10-03T17:20:00,现场电话核实：志愿者被临时调去补给站
+F-7843649eb4,已驳回,林亦舟,2026-10-03T17:41:00,录入笔误，两个时间戳被打反
+```
+
+硬规则（`core/review.py`）：
+
+| 规则 | 不满足时 |
+|---|---|
+| `复核状态` 只能是 `已确认` / `已驳回` / `转人工队列` | 该行不生效，报"工具不替人做结论" |
+| 必须有 `复核人` | 不生效——没人负责的结论不算确认（f22/f45） |
+| 必须有 `复核时间` | 不生效——否则无法回答"压了多久还没核" |
+| 编号重复 | 只认第一条，后一条报出来 |
+| 编号对不上当前清单 | 不静默丢弃，提示"数据可能已变，需重新核对" |
+
+指标口径（`core/metrics.py`）：
+
+- **误报率** = 已驳回 / **已复核**。分母只含人实际核过的，未复核的不进分母、也不算误报。
+- **确认率** = 已确认 / **全部条目**。试点硬门 100%：每条没确认的缺项在现场等于没人负责。
+- **复核滞后** = 复核时间 − 本次运行时间。是滞后不是工时；为负时单独列出、不计入平均。
+
+### 2.2 金标比对：`data/gold_overlap.csv`
+
+```csv
+shift_a,shift_b,是否真重叠,标注人,备注
+S004,S005,是,傅景,同一替补被同时排在补给站与咨询台
+S001,S003,否,傅景,同岗位不同人，连班不算冲突
+```
+
+- **召回** = 命中的真重叠 / 金标里全部真重叠。**这是关闭 G1 的唯一判别依据**（"发现全部重叠"需要分母）。
+- **精确** = 命中 / 工具报出的（分母只算金标明确标过"否"的）。
+- 工具报了、金标没标过这一对 → 记**金标未覆盖**，单独列出，**不算误报**。
+  没标注不等于没异常；算成误报会让人误以为该收窄条件。
+- `是否真重叠` 只认 是/否（及 y/n、true/false、1/0），其他取值报格式问题。
 
 `来源位置` 形如 `shifts.csv#L5 + checkins.csv#L4`——`文件名#L物理行号`（首数据行为 `L2`）。
 **每一条缺项都必须能靠这个坐标一跳回到原始行**，这是"可追溯"的验收方式。
@@ -112,9 +161,14 @@ from volunteer_handover.utils import config, csvio, logutil
 
 | 函数 / 类 | 签名 | 说明 |
 |---|---|---|
-| `run` | `run(data_dir, config) -> RunResult` | 编排：加载 → 快照 → C1–C9 → 汇总。不写文件 |
+| `run` | `run(data_dir, config=None, review_path=None, run_at="") -> RunResult` | 编排：加载 → 快照 → C1–C9 → 回填复核 → 算指标。不写文件 |
 | `write_outputs` | `write_outputs(result, out_dir) -> list[Path]` | 只写 out/ |
-| `RunResult` | `.items` `.checks` `.dataset` `.warnings` `.excluded_shifts` `.blocked` `.summary()` | `blocked` 为真表示能力越界，CLI 退出 2 |
+| `RunResult` | `.items` `.checks` `.dataset` `.warnings` `.excluded_shifts` `.blocked` `.review` `.metrics` `.run_at` `.summary()` | `blocked` 为真表示能力越界或表头契约不满足，CLI 退出 2 |
+| `loader.Dataset` | `.available(name)` `.blocked_columns()` `.column_warnings()` | 读到 0 行 ≠ 没读到；缺必需列 = 本趟不出结论 |
+| `schema.check_columns` | `check_columns(file_name, header) -> ColumnCheck` | 必需列缺失 → blocked；可选列缺失 → 跳过对应判断并告警 |
+| `review.load_reviews` / `apply_reviews` | `load_reviews(path) -> (entries, problems)`；`apply_reviews(findings, entries) -> ReviewApply` | 没复核人/没时间的结论不生效；对不上的编号显式报出 |
+| `metrics.compute` | `compute(findings, run_at="") -> Metrics` | `.false_positive_rate` 无样本时为 `None`，不是 0 |
+| `gold.score` | `score(gold_pairs, findings, code="C2") -> ScoreResult` | `.g1_ready` 为真才可以说"发现全部重叠" |
 | `loader.load_dataset` | `load_dataset(data_dir, files=DEFAULT_FILES) -> Dataset` | 读失败不抛异常，记 `missing` + unavailable 快照 |
 | `checks.all_checks` | `all_checks(dataset, positions_index, in_scope, boundary, config, checks) -> list[Finding]` | 九条校验统一入口 |
 | `items.ItemSheet` | `ItemSheet(batch_id, findings, page_limit=40, ...)` | `.filtered()` `.page_warning()` `.render_markdown()` `.to_csv()` |
@@ -138,8 +192,19 @@ PYTHONPATH=src python3 -m volunteer_handover.main [选项]
   --out DIR               输出目录（默认 out/）
   --max-print N           终端最多打印多少行（默认 40）
   --json                  输出机器可读摘要
+  --review FILE           人工复核回填表（如 data/review.csv）；给了才算误报率/确认率
+  --gold FILE             金标标注表（如 data/gold_overlap.csv）；给了才算召回率
+  --run-at ISO            清单生成时间；回放历史批次时给出，否则复核滞后会算出负数
   --simulate-failure FILE 故意让某个输入不可读，用于验收 C8（可重复）
   --version               版本号
+```
+
+两个独立脚本，读已经落盘的 CSV，不重跑核对：
+
+```bash
+python3 scripts/metrics.py --items out/items.csv --review data/review.csv \
+    --run-at 2026-10-03T17:00:00 --out out/metrics.md
+python3 scripts/score.py   --items out/items.csv --gold data/gold_overlap.csv --out out/score.md
 ```
 
 **退出码**
@@ -147,7 +212,8 @@ PYTHONPATH=src python3 -m volunteer_handover.main [选项]
 | 码 | 含义 |
 |---|---|
 | `0` | 正常完成（含"有缺项"——有缺项是正常工作结果） |
-| `2` | 边界越界（`blocked`）：配置里出现写回接口、外发通道或自动指派 |
+| `2` | 运行被阻断（`blocked`）：配置里出现写回接口/外发通道/自动指派，**或**表头缺必需列（"本次不出结论"） |
+| `3` | 仅 `scripts/score.py`：金标比对未通过（G1 还不能关），即召回 < 100% 或还有未标注对 |
 
 **不会有的退出码**：没有"自动修复成功"这种码，因为工具没有修复能力。
 

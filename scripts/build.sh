@@ -30,10 +30,18 @@ PYTHONPATH=src "$PY" examples/demo.py > /tmp/vh-demo.log 2>&1 || {
 }
 echo "    demo OK（$(wc -l < /tmp/vh-demo.log | tr -d ' ') 行输出）"
 
-echo "==> 5/5 端到端跑一次只读核对并检查产物"
+echo "==> 5/5 端到端跑一次只读核对（含复核回填与金标比对）并检查产物"
 OUT="$(mktemp -d)"
-PYTHONPATH=src "$PY" -m volunteer_handover.main --out "$OUT" > /dev/null
-for f in items.csv items.md handover.md snapshots.csv audit.csv; do
+PYTHONPATH=src "$PY" -m volunteer_handover.main --out "$OUT" \
+  --review data/review.csv --run-at 2026-10-03T17:00:00 > /dev/null
+for f in items.csv items.md handover.md snapshots.csv audit.csv metrics.md metrics.csv; do
+  [ -s "$OUT/$f" ] || { echo "    缺少产物：$f"; exit 1; }
+done
+"$PY" scripts/metrics.py --items "$OUT/items.csv" --review data/review.csv \
+  --run-at 2026-10-03T17:00:00 --out "$OUT/metrics.md" > /dev/null
+"$PY" scripts/score.py --items "$OUT/items.csv" --gold data/gold_overlap.csv \
+  --out "$OUT/score.md" > /dev/null || { echo "    金标比对未通过（G1 还关不掉），这不算构建失败但要知道"; }
+for f in metrics.md score.md; do
   [ -s "$OUT/$f" ] || { echo "    缺少产物：$f"; exit 1; }
 done
 echo "    产物 OK：$(ls "$OUT" | tr '\n' ' ')"

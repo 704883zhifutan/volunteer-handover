@@ -2,6 +2,38 @@
 
 遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)；版本号遵循语义化版本。
 
+## [0.2.0] - 2026-10-23
+
+让试点"收得了尾"：结论能回填、指标能复算、验收有分母。
+
+### Added
+- **复核回填** `data/review.csv` + `core/review.py`：人工结论回到系统里。
+  没有复核人、没有复核时间的行不生效；编号对不上时不静默丢弃，提示"数据可能已变，需重新核对"。
+- **复核指标** `core/metrics.py` + `scripts/metrics.py`：误报率（分母=已复核）、
+  确认率（分母=全部，硬门 100%）、复核滞后。无样本时输出"样本不足，暂不计算"，不写 0。
+- **金标比对** `core/gold.py` + `scripts/score.py`：召回率/精确率 + "G1 能不能关"的直白结论。
+  金标未覆盖的对单独列出，不算误报。
+- **表头契约** `core/schema.py`：缺必需列直接阻断（退出码 2，"本次不出结论"）；
+  缺可选列只跳过对应判断并告警。每条缺失都写明"缺了会影响哪个判断"。
+- `items.csv` 增加 `编号`（内容指纹，`F-` + sha1 前 10 位）与 `相关对象` 两列。
+- CLI 新增 `--review` `--gold` `--run-at`；产物新增 `metrics.md`/`metrics.csv`（始终生成）与 `score.md`。
+- 测试 83 → 128（`test_schema` / `test_review` / `test_metrics` / `test_gold`）。
+
+### Changed
+- `run(data_dir, config, review_path=None, run_at="")`：`run_at` 可显式给出，
+  回放历史批次时不再用"今天"去减历史复核时间（那样算出的滞后是负数，没有意义）。
+
+### Fixed
+- 条目编号纳入 `detail`：同一个交接的两条信号（未签收 / 交出人与接收人同一人）此前会算出
+  同一个编号，人工回填只能落到其中一条上。
+- 复核时间早于本次运行的记录不再参与平均滞后，单独提示"是不是把复核时间填成了业务当天"。
+
+### Known limitations
+- 延迟阈值（H1）尚未核实，因此 `time.backfill_threshold_minutes` 默认为 `null`：只标记、不判定。
+- 配置解析器只支持 YAML 子集（嵌套映射与标量列表），见 `docs/design.md`。
+- "完成"的定义（G3）、队列值守人（G2）尚未确认，清单头部留空待填，代码不代填。
+- 仓库自带的 `data/review.csv` 与 `data/gold_overlap.csv` 是**示例**，不代表真实复核结论。
+
 ## [0.1.0] - 2026-10-23
 
 首版：把《试点实施方案》§5–§6 的字段设计与九条确定性校验落成可运行骨架。

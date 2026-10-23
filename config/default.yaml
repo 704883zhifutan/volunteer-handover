@@ -1,7 +1,7 @@
 # 非机密配置：默认参数。机密值走环境变量，不进仓。
 project:
   name: volunteer-handover
-  version: 0.1.0
+  version: 0.2.0
   mode: readonly          # 唯一允许的模式；写回通道在本项目里不存在
 
 pilot:

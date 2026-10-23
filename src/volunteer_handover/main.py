@@ -24,6 +24,8 @@ if __package__ in (None, ""):  # 允许直接 python3 运行本文件
 
 from volunteer_handover import __version__            # noqa: E402
 from volunteer_handover.core.engine import run, write_outputs  # noqa: E402
+from volunteer_handover.core.gold import load_gold, render_markdown as render_score, score  # noqa: E402
+from volunteer_handover.core.metrics import render_text as render_metrics_text             # noqa: E402
 from volunteer_handover.utils import config as config_util      # noqa: E402
 
 DEFAULT_FILES = ("positions.csv", "shifts.csv", "checkins.csv", "handover.csv")
@@ -45,6 +47,21 @@ def _parse_args(argv=None):
         default=[],
         metavar="FILE",
         help="模拟某文件读取失败（演示 C8 失败即标记），可重复",
+    )
+    parser.add_argument(
+        "--review",
+        default=None,
+        help="人工复核回填表（如 data/review.csv）；给了才会算误报率与确认率",
+    )
+    parser.add_argument(
+        "--run-at",
+        default="",
+        help="清单生成时间（默认当前时间）；回放历史批次时给出，否则复核滞后会算出负数",
+    )
+    parser.add_argument(
+        "--gold",
+        default=None,
+        help="金标标注表（如 data/gold_overlap.csv）；给了才会算召回率与精确率",
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     return parser.parse_args(argv)
@@ -73,7 +90,7 @@ def main(argv=None) -> int:
         data_dir = tmp_dir
 
     try:
-        result = run(data_dir, cfg)
+        result = run(data_dir, cfg, review_path=args.review, run_at=args.run_at)
         paths = write_outputs(result, args.out)
     finally:
         if tmp_dir:
@@ -89,6 +106,25 @@ def main(argv=None) -> int:
 
     if result.items.findings:
         print(result.items.render_text(max_rows=args.max_print))
+        print()
+
+    if result.metrics is not None:
+        print(render_metrics_text(result.metrics))
+        print()
+    if not args.review:
+        print("提示：未做复核回填（--review），误报率与确认率暂时无法计算——未复核不等于没有误报。")
+        print()
+
+    if args.gold:
+        gold_pairs, gold_problems = load_gold(args.gold)
+        scored = score(gold_pairs, result.items.findings)
+        scored.problems.extend(gold_problems)
+        score_path = Path(args.out) / "score.md"
+        score_path.write_text(render_score(scored, result.batch_id, args.gold), encoding="utf-8")
+        recall = "无法计算" if scored.recall is None else f"{scored.recall * 100:.1f}%"
+        print(f"金标比对：召回 {recall} · 命中 {scored.tp} · 漏报 {scored.fn} · 误报 {scored.fp} "
+              f"· 未标注 {len(scored.unlabeled)}")
+        print(f"  G1（能不能说“发现全部重叠”）：{'可以关闭' if scored.g1_ready else '还不能关闭'} → {score_path}")
         print()
 
     for warning in result.warnings:

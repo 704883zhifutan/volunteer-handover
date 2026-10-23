@@ -19,6 +19,7 @@
 | 一页缺项清单 `out/items.md` | 现场协调员 | 今天哪些对不上、在哪一行、建议怎么做 |
 | 交接责任清单 `out/handover.md` | 流程协调员 | 谁交给谁、依据哪一版、哪些未结项 |
 | 快照 + 审计 `out/snapshots.csv` `out/audit.csv` | 质量负责人 | 当时读的是哪一份、谁查过、用的哪版 |
+| 复核指标 `out/metrics.md` | 业务负责人 | 误报率、确认率、复核滞后——**没有它就说不清试点有没有用** |
 
 六个需求点里，真正需要写代码的只有两个（清单），另外两个是数据前提（双时间戳、关联编号），
 剩下两个是流程（人工队列、暂停开关），不该用代码解决。
@@ -31,10 +32,14 @@
 # 1) 跑一遍样本数据（虚构数据，见 data/）
 PYTHONPATH=src python3 -m volunteer_handover.main
 
-# 2) 桌面推演：一条缺项怎么从原始行走到人工确认
+# 2) 带上人工复核回填，看误报率/确认率怎么算出来
+PYTHONPATH=src python3 -m volunteer_handover.main \
+    --review data/review.csv --run-at 2026-10-03T17:00:00
+
+# 3) 桌面推演：一条缺项怎么从原始行走到人工确认
 PYTHONPATH=src python3 examples/demo.py
 
-# 3) 跑测试（83 个，无需 pytest）
+# 4) 跑测试（128 个，无需 pytest）
 python3 -m unittest discover -s tests -t tests
 ```
 
@@ -54,6 +59,28 @@ python3 -m unittest discover -s tests -t tests
 
 每条都带 `文件#L行号`，能一跳回到原始行。这是"可追溯"的全部含义：不是一句描述，是一个坐标。
 
+## 试点能不能收尾，看两个数
+
+清单发出去不算完成，得有人核、结论回得来，W4 复盘才有依据。
+
+```bash
+# 误报率 / 确认率 / 复核滞后（读已落盘的 CSV，不重跑核对）
+python3 scripts/metrics.py --items out/items.csv --review data/review.csv \
+    --run-at 2026-10-03T17:00:00
+
+# 金标比对：召回率 + "G1 能不能关"
+python3 scripts/score.py --items out/items.csv --gold data/gold_overlap.csv
+```
+
+两个口径上要守住的地方：
+
+- **误报率的分母是"已复核"**，不是"全部条目"。拿没核过的当误报，数字会好看，但是假的。
+- **召回率的分母是金标里的真重叠对数**。"发现全部重叠"没有分母就永远无法判定真假，
+  所以 `data/gold_overlap.csv` 必须先有人标（W3 回放 50 次调班）。
+
+复核回填表格式与硬规则见 [docs/api.md §2.1](docs/api.md)。没有复核人、没有复核时间的行不生效——
+没人负责的"已确认"等于没确认。
+
 ## 在 VS Code 里跑
 
 仓库带好了 `.vscode/` 配置，打开文件夹就能用，不需要改任何设置。
@@ -61,7 +88,7 @@ python3 -m unittest discover -s tests -t tests
 1. **打开**：`File > Open Folder…` 选这个目录。
 2. **装扩展**：右下角弹「此工作区有推荐扩展」→ 点安装。只有 `ms-python.python` 一个，
    调试器和 Pylance 会跟着装上。项目零第三方依赖，**不用建虚拟环境、不用 pip install**。
-3. **跑起来**：`Cmd+Shift+B` 跑默认构建任务（语法 + 83 个测试 + 推演 + 端到端产物），
+3. **跑起来**：`Cmd+Shift+B` 跑默认构建任务（语法 + 128 个测试 + 推演 + 端到端产物），
    终端出现「构建通过」就说明环境齐了。
 4. **看清单**：`Cmd+Shift+P` → `Tasks: Run Task` → 「运行核对并打开清单」。
 
@@ -72,7 +99,7 @@ python3 -m unittest discover -s tests -t tests
 | ① 运行核对（当前批次） | 跑主程序，产物写 `out/` |
 | ② 桌面推演（W0） | 走一遍「Z0007 两个点位」的完整故事 |
 | ③ 演示：输入读不到会怎样 | 看 C8 怎么标记而不是补值 |
-| ④ 调试全部单元测试 | 83 个测试，可打断点 |
+| ④ 调试全部单元测试 | 128 个测试，可打断点 |
 | ⑤ 调试当前打开的测试文件 | 调试 `tests/test_*.py` |
 | ⑥ 调试当前打开的文件 | 通用 |
 
@@ -94,13 +121,15 @@ python3 -m unittest discover -s tests -t tests
 | 为缺失值补默认值 | `core/fields.py` 三值逻辑：缺失 ≠ 未确认 |
 | 预设"迟到多久算超时" | `config` 的 `backfill_threshold_minutes: null`，事实未核实就不填 |
 | 判定"交接是否完成" | `core/handover.py` 只输出信号，不输出 `is_complete` |
+| 缺列时"尽力而为" | `core/schema.py`：缺必需列直接 blocked（本次不出结论），缺可选列跳过并告警 |
+| 替人做复核结论 | `core/review.py`：状态只认 已确认/已驳回/转人工队列，且必须有复核人 |
 
 ## 目录
 
 ```
 volunteer-handover/
 ├── src/volunteer_handover/
-│   ├── main.py              # CLI 入口（退出码 0 正常 / 2 越界）
+│   ├── main.py              # CLI 入口（退出码 0 正常 / 2 阻断）
 │   ├── core/
 │   │   ├── boundary.py      # 能力禁用清单
 │   │   ├── fields.py        # 字段字典 + 三值逻辑
@@ -111,18 +140,24 @@ volunteer-handover/
 │   │   ├── items.py         # 产物 A：一页缺项清单
 │   │   ├── handover.py      # 产物 B：交接责任清单
 │   │   ├── trace.py         # 快照 + 来源位置
+│   │   ├── schema.py        # 表头契约：缺必需列就阻断
+│   │   ├── review.py        # 复核回填（没人负责的结论不生效）
+│   │   ├── metrics.py       # 误报率 / 确认率 / 复核滞后
+│   │   ├── gold.py          # 金标比对：召回率与 G1 判定
 │   │   └── engine.py        # 编排
 │   └── utils/               # 配置解析、CSV、审计日志
 ├── docs/
 │   ├── design.md            # 为什么这么切、九条校验的设计理由、已知取舍
 │   ├── api.md               # 数据契约（CSV 列）+ 模块 API + CLI
 │   └── gates.md             # 三门禁：判定方法 / 值守与叫停 / "完成"的定义
-├── data/                    # 虚构样本（脱敏，无真实个人信息）
+├── data/                    # 虚构样本 + review.csv（复核回填示例）+ gold_overlap.csv（金标示例）
 ├── examples/demo.py         # W0 桌面推演
-├── tests/                   # 83 个单元测试
+├── tests/                   # 128 个单元测试
 ├── scripts/
 │   ├── build.sh             # 本地自检：语法、测试、demo、端到端产物
 │   ├── deploy.sh            # 发布前检查：门禁没关就拒绝出包（退出码 3）
+│   ├── metrics.py           # 从落盘 CSV 复算复核指标
+│   ├── score.py             # 金标比对（G1 关不掉时退出码 3）
 │   ├── check_boundary.py    # 配置里不得出现写回/外发/指派
 │   └── check_syntax.py      # 语法检查（不写字节码）
 ├── config/default.yaml      # 非机密默认参数
@@ -148,8 +183,8 @@ volunteer-handover/
 |---|---|---|
 | W0（当前） | 桌面推演 + 关三门禁 | 本仓库 + 门禁结论 |
 | W1 | 数据地基薄版：双时间戳 + 关联编号 + 快照 | 单批次只读导出能跑通 |
-| W2 | 清单进现场，只开 4 类异常 | 一页清单 + 核对工时基线 |
-| W3 | 回放 50 次调班做金标比对 | 召回率 / 误报率 |
+| W2 | 清单进现场，只开 4 类异常；每天回填 review.csv | 一页清单 + 核对工时基线 |
+| W3 | 回放 50 次调班做金标比对（`scripts/score.py`） | 召回率 / 误报率 |
 | W4 | 复盘决策门 | 扩范围 / 收窄 / 停止 |
 
 验收指标先测基线，不预设阈值；其中两项是硬门：确认完整率必须 100%，

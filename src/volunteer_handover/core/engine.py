@@ -19,6 +19,8 @@ from .checks import all_checks
 from .handover import HandoverCheck, build_checklist, render_markdown as render_handover
 from .items import ItemSheet
 from .loader import Dataset, index_by, load_dataset
+from .metrics import Metrics, compute as compute_metrics, render_markdown as render_metrics
+from .review import ReviewApply, apply_reviews, load_reviews
 from .times import parse_ts
 
 SCOPE_NOTE = "医疗与安保岗位不进入试点范围，也不自动指派（f05）"
@@ -35,6 +37,9 @@ class RunResult:
     blocked_reason: str = ""
     warnings: List[str] = field(default_factory=list)
     excluded_shifts: List[str] = field(default_factory=list)
+    review: Optional[ReviewApply] = None
+    metrics: Optional[Metrics] = None
+    run_at: str = ""
 
     @property
     def blocked(self) -> bool:
@@ -52,6 +57,11 @@ class RunResult:
             "out_of_scope": self.excluded_shifts,
             "blocked": self.blocked,
             "warnings": self.warnings,
+            "reviewed": self.review.reviewed if self.review else 0,
+            "false_positive_rate": (
+                None if self.metrics is None else self.metrics.false_positive_rate
+            ),
+            "confirmed_rate": None if self.metrics is None else self.metrics.confirmed_rate,
         }
 
 
@@ -69,9 +79,12 @@ def _in_scope_shifts(shifts, positions_index, excluded_categories) -> tuple:
     return in_scope, excluded
 
 
-def run(data_dir, config: Optional[dict] = None) -> RunResult:
+def run(data_dir, config: Optional[dict] = None, review_path=None, run_at: str = "") -> RunResult:
+    """run_at = 清单生成时间。默认取当前时间；回放历史批次时应显式给出，
+    否则"复核滞后"会用今天去减去年的复核时间，算出没有意义的负数。"""
     cfg = config or {}
     audit = AuditLog()
+    run_at = run_at or datetime.now().isoformat(timespec="seconds")
 
     pilot = cfg.get("pilot") or {}
     scope = cfg.get("scope") or {}
@@ -121,9 +134,36 @@ def run(data_dir, config: Optional[dict] = None) -> RunResult:
             "缺失文件：" + "、".join(dataset.missing) + " —— 本次结论不覆盖这些文件，也未沿用上次结果"
         )
 
+    warnings.extend(dataset.column_warnings())
+
     blocked_reason = ""
     if boundary.violations():
         blocked_reason = "配置中出现禁用能力：" + "、".join(k for k, _ in boundary.violations())
+    bad_columns = dataset.blocked_columns()
+    if bad_columns:
+        column_reason = "表头契约不满足，本次不出结论：" + "；".join(c.describe() for c in bad_columns)
+        blocked_reason = f"{blocked_reason}；{column_reason}" if blocked_reason else column_reason
+
+    review_result = None
+    if review_path:
+        entries, problems = load_reviews(review_path)
+        review_result = apply_reviews(items.findings, entries)
+        review_result.problems.extend(problems)
+        items.review_note = review_result.note()
+        for problem in review_result.problems:
+            warnings.append(f"复核回填问题：{problem.locator} {problem.reason}")
+        for entry in review_result.unmatched:
+            warnings.append(
+                f"复核结论对不上：{entry.fid}（{entry.locator}）。数据可能已变，编号已重新生成，"
+                "这条结论没有生效，需要重新核对"
+            )
+        audit.record(
+            "review.import",
+            str(review_path),
+            note=f"applied={review_result.applied} unmatched={len(review_result.unmatched)}",
+        )
+
+    metrics = compute_metrics(items.findings, run_at)
 
     audit.record("run.finish", f"{len(items.findings)} findings", note=f"blocked={bool(blocked_reason)}")
     return RunResult(
@@ -136,6 +176,9 @@ def run(data_dir, config: Optional[dict] = None) -> RunResult:
         blocked_reason=blocked_reason,
         warnings=warnings,
         excluded_shifts=excluded,
+        review=review_result,
+        metrics=metrics,
+        run_at=run_at,
     )
 
 
@@ -149,6 +192,8 @@ def write_outputs(result: RunResult, out_dir) -> Dict[str, Path]:
         "handover_md": out / "handover.md",
         "snapshots_csv": out / "snapshots.csv",
         "audit_csv": out / "audit.csv",
+        "metrics_md": out / "metrics.md",
+        "metrics_csv": out / "metrics.csv",
     }
     result.items.to_csv(paths["items_csv"])
     paths["items_md"].write_text(result.items.render_markdown(), encoding="utf-8")
@@ -157,4 +202,31 @@ def write_outputs(result: RunResult, out_dir) -> Dict[str, Path]:
 
     write_snapshots(result.dataset.snapshots, paths["snapshots_csv"])
     result.audit.to_csv(paths["audit_csv"])
+    if result.metrics is not None:
+        paths["metrics_md"].write_text(
+            render_metrics(result.metrics, result.batch_id), encoding="utf-8"
+        )
+        _write_metrics_csv(result, paths["metrics_csv"])
     return paths
+
+
+def _write_metrics_csv(result: RunResult, path: Path) -> None:
+    """指标落 CSV，方便直接贴进复盘表。比率缺失时写空值，不写 0。"""
+    import csv
+
+    m = result.metrics
+    with Path(path).open("w", encoding="utf-8", newline="") as fh:
+        writer = csv.writer(fh)
+        writer.writerow(["指标", "数值"])
+        rows = [
+            ("条目总数", m.total),
+            ("已复核", m.reviewed),
+            ("未复核", m.unreviewed),
+            ("已确认", m.confirmed),
+            ("已驳回", m.rejected),
+            ("转人工队列", m.queued),
+            ("误报率", "" if m.false_positive_rate is None else f"{m.false_positive_rate:.4f}"),
+            ("确认率", "" if m.confirmed_rate is None else f"{m.confirmed_rate:.4f}"),
+        ]
+        for name, value in rows:
+            writer.writerow([name, value])

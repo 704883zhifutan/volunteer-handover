@@ -37,16 +37,31 @@ jobs:
       - name: 桌面推演
         run: PYTHONPATH=src python examples/demo.py
 
-      - name: 端到端核对并产出清单
-        run: PYTHONPATH=src python -m volunteer_handover.main --out out
+      - name: 端到端核对并产出清单（含复核回填）
+        run: |
+          PYTHONPATH=src python -m volunteer_handover.main --out out \
+            --review data/review.csv --run-at 2026-10-03T17:00:00
 
       - name: 校验产物
         run: |
-          for f in items.csv items.md handover.md snapshots.csv audit.csv; do
+          for f in items.csv items.md handover.md snapshots.csv audit.csv metrics.md metrics.csv; do
             test -s "out/$f" || { echo "缺少产物: $f"; exit 1; }
           done
-          echo "--- items.md（前 30 行）---"
-          head -30 out/items.md
+          echo "--- items.md（前 20 行）---"
+          head -20 out/items.md
+          echo "--- metrics.md 总览 ---"
+          sed -n '1,25p' out/metrics.md
+
+      - name: 复核指标可复算
+        run: |
+          python scripts/metrics.py --items out/items.csv --review data/review.csv \
+            --run-at 2026-10-03T17:00:00 --out out/metrics.md
+
+      - name: 金标比对（G1 未关时不阻断，只记录）
+        continue-on-error: true
+        run: |
+          python scripts/score.py --items out/items.csv --gold data/gold_overlap.csv \
+            --out out/score.md
 
       - name: 上传产物（供人工复核）
         uses: actions/upload-artifact@v4

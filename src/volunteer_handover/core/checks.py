@@ -133,6 +133,7 @@ def c2_double_booking(shifts, in_scope: Set[str]) -> List[Finding]:
                         received_at=a.get("received_at"),
                         version=a.get("version_no"),
                         suggestion=SUGGEST_VERIFY,
+                        refs=f"{a.get('shift_id')},{b.get('shift_id')}",
                     )
                 )
     return findings

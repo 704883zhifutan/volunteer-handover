@@ -41,5 +41,6 @@
     "out": true,
     "dist": true,
     "**/__pycache__": true
-  }
+  },
+  "python-envs.defaultEnvManager": "ms-python.python:system"
 }

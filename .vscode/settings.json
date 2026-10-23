@@ -1,0 +1,45 @@
+{
+  // 只读核对工具：零第三方依赖，解释器就是系统自带的 python3（3.9+）。
+  "python.defaultInterpreterPath": "/usr/bin/python3",
+
+  // src/ 是源码根，让 Pylance 能直接解析 volunteer_handover 包
+  "python.analysis.extraPaths": ["${workspaceFolder}/src"],
+  "python.analysis.typeCheckingMode": "basic",
+
+  // 没有虚拟环境，所以不需要 activate，靠 PYTHONPATH 指到 src
+  "python.terminal.activateEnvironment": false,
+  "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${workspaceFolder}/src"
+  },
+  "terminal.integrated.env.linux": {
+    "PYTHONPATH": "${workspaceFolder}/src"
+  },
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder}/src"
+  },
+
+  // 测试用标准库 unittest（项目不装 pytest）
+  "python.testing.unittestEnabled": true,
+  "python.testing.pytestEnabled": false,
+  "python.testing.unittestArgs": ["-v", "-s", "./tests", "-t", "./tests"],
+  "python.testing.cwd": "${workspaceFolder}",
+
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.rulers": [100],
+  "editor.tabSize": 4,
+
+  // out/ 是每次跑出来的产物，不该在资源管理器里晃
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    ".DS_Store": true
+  },
+  "search.exclude": {
+    "out": true,
+    "dist": true,
+    "**/__pycache__": true
+  }
+}

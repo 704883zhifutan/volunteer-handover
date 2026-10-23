@@ -1,0 +1,58 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "构建自检（build.sh）",
+      "detail": "语法 + 83 个测试 + 桌面推演 + 端到端产物，一条命令全过",
+      "type": "shell",
+      "command": "bash scripts/build.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "跑全部单元测试",
+      "type": "shell",
+      "command": "PYTHONPATH=src python3 -m unittest discover -s tests -t tests -v",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "运行核对并打开清单",
+      "detail": "跑一次只读核对，然后把 out/items.md 前 40 行打出来",
+      "type": "shell",
+      "command": "PYTHONPATH=src python3 -m volunteer_handover.main --out out && sed -n '1,40p' out/items.md",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "桌面推演（W0）",
+      "type": "shell",
+      "command": "PYTHONPATH=src python3 examples/demo.py",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "边界守卫（配置不得有写回/外发/指派）",
+      "type": "shell",
+      "command": "python3 scripts/check_boundary.py",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "门禁检查（三门禁未关会拒绝出包，退出码 3）",
+      "type": "shell",
+      "command": "bash scripts/deploy.sh; echo \"（退出码 $? ：3 表示门禁未关，属预期）\"",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "清理产物与缓存",
+      "type": "shell",
+      "command": "rm -rf out dist && find . -name '__pycache__' -type d -prune -exec rm -rf {} +",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    }
+  ]
+}

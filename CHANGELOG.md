@@ -2,6 +2,14 @@
 
 遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)；版本号遵循语义化版本。
 
+## [Unreleased]
+
+### Added
+- `docs/discovery-flow.svg` + `scripts/make_discovery_flow.py`：业务需求发现与验证流程
+  （19 步 / 6 个人判断点 / 4 个签字节点），标出 AI 只做草稿、判断与签字全在人。
+- `QUOTATION.md`：报价单。六种计价方式对比 + 33 人天明细 + 效果浮动公式 + 能力边界条款，
+  并逐项对应到仓库里的实现位置。
+
 ## [0.3.0] - 2026-10-23
 
 ### Added

@@ -34,8 +34,9 @@ jobs:
       - name: 流程图与生成脚本一致
         run: |
           python scripts/make_flowchart.py
-          git diff --exit-code docs/flowchart.svg
-          echo "流程图由 scripts/make_flowchart.py 生成；手改会被这一步拦下"
+          python scripts/make_discovery_flow.py
+          git diff --exit-code docs/flowchart.svg docs/discovery-flow.svg
+          echo "流程图由 scripts/make_*.py 生成；手改会被这一步拦下"
 
       - name: 单元测试
         run: python -m unittest discover -s tests -t tests -v

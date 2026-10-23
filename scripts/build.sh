@@ -22,16 +22,19 @@ PYTHONPATH=src "$PY" -c "import volunteer_handover.main"
 echo "    导入 OK"
 
 # 流程图是脚本生成的。有人手改 SVG 就会和脚本对不上，这里当场拦住。
-FC_BAK="$(mktemp)"
-cp docs/flowchart.svg "$FC_BAK"
-"$PY" scripts/make_flowchart.py > /dev/null
-if ! cmp -s docs/flowchart.svg "$FC_BAK"; then
-  cp "$FC_BAK" docs/flowchart.svg
-  echo "    docs/flowchart.svg 与 scripts/make_flowchart.py 不一致（手改过？）"
-  echo "    改流程请改脚本里的 NODES，然后重新生成"
-  exit 1
-fi
-echo "    流程图与脚本一致 OK"
+for pair in "docs/flowchart.svg:scripts/make_flowchart.py" "docs/discovery-flow.svg:scripts/make_discovery_flow.py"; do
+  SVG="${pair%%:*}"; GEN="${pair##*:}"
+  FC_BAK="$(mktemp)"
+  cp "$SVG" "$FC_BAK"
+  "$PY" "$GEN" > /dev/null
+  if ! cmp -s "$SVG" "$FC_BAK"; then
+    cp "$FC_BAK" "$SVG"
+    echo "    $SVG 与 $GEN 不一致（手改过？）"
+    echo "    改流程请改脚本里的 NODES，然后重新生成"
+    exit 1
+  fi
+done
+echo "    两张流程图与生成脚本一致 OK"
 
 echo "==> 3/5 单元测试"
 "$PY" -m unittest discover -s tests -t tests 2>&1 | tail -3

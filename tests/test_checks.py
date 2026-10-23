@@ -36,6 +36,14 @@ def R(file_name, line, **overrides):
     return Row(data=data, locator=f"{file_name}#L{line}", file_name=file_name, line_no=line)
 
 
+def H(file_name, line, **overrides):
+    data = {"handover_id": "H1", "shift_id": "S001", "from_person": "Z1", "to_person": "Z2",
+            "handover_at": "2026-10-03T11:00:00", "accepted_at": "2026-10-03T11:05:00",
+            "version_no": "v3", "open_items": ""}
+    data.update(overrides)
+    return Row(data=data, locator=f"{file_name}#L{line}", file_name=file_name, line_no=line)
+
+
 def C(file_name, line, **overrides):
     data = {
         "checkin_id": "K1",
@@ -126,6 +134,31 @@ class C6Test(unittest.TestCase):
         self.assertEqual(checks.c6_tri_state([R("shifts.csv", 2, confirm_status="unconfirmed", occurred_at="")], {"S001"}), [])
 
 
+class C1OrphanTest(unittest.TestCase):
+    def test_unplanned_checkin_is_a_field_fact(self):
+        found = checks.c1_cross_check(
+            [R("shifts.csv", 2, shift_id="S001")],
+            [C("checkins.csv", 3, shift_id="S999", person_code="Z0009", site_id="S-A")],
+            {},
+            {"S001"},
+        )
+        types = [f.type for f in found]
+        self.assertIn("计划外到岗", types)
+        orphan = [f for f in found if f.type == "计划外到岗"][0]
+        self.assertEqual(orphan.subject, "S999")
+        self.assertIn("顶班", orphan.detail)
+        self.assertIn("checkins.csv#L3", orphan.source_locator)
+
+    def test_known_shift_is_not_an_orphan(self):
+        found = checks.c1_cross_check(
+            [R("shifts.csv", 2, shift_id="S001")],
+            [C("checkins.csv", 2, shift_id="S001")],
+            {},
+            {"S001"},
+        )
+        self.assertNotIn("计划外到岗", [f.type for f in found])
+
+
 class C7Test(unittest.TestCase):
     def test_duplicate_id(self):
         rows = [R("shifts.csv", 2), R("shifts.csv", 3)]
@@ -133,10 +166,13 @@ class C7Test(unittest.TestCase):
         self.assertEqual(found[0].type, "重复编号")
         self.assertIn("shifts.csv#L2", found[0].source_locator)
 
-    def test_orphan_reference(self):
-        found = checks.c7_numbering([R("shifts.csv", 2)], [C("checkins.csv", 2, shift_id="S999")], [])
+    def test_checkin_orphan_is_not_reported_here(self):
+        """签到侧孤儿引用由 C1 报"计划外到岗"：那是现场事实，不是编号问题（同一行不重复计数）。"""
+        self.assertEqual(checks.c7_numbering([R("shifts.csv", 2)], [C("checkins.csv", 2, shift_id="S999")], []), [])
+
+    def test_handover_orphan_is_reported_here(self):
+        found = checks.c7_numbering([R("shifts.csv", 2)], [], [H("handover.csv", 2, shift_id="S999")])
         self.assertEqual([f.type for f in found], ["编号断链"])
-        self.assertEqual(found[0].subject, "S999")
 
     def test_unit_difference_hours_as_minutes(self):
         found = checks.c7_numbering([R("shifts.csv", 2, window_minutes="4")], [], [])

@@ -49,6 +49,15 @@ PYTHONPATH=src "$PY" -m volunteer_handover.main --out "$OUT" \
 for f in items.csv items.md handover.md snapshots.csv audit.csv metrics.md metrics.csv; do
   [ -s "$OUT/$f" ] || { echo "    缺少产物：$f"; exit 1; }
 done
+echo "    批次对比（自己和自己比：应 0 新增 / 0 消失）"
+OUT2="$(mktemp -d)"
+PYTHONPATH=src "$PY" -m volunteer_handover.main --out "$OUT2" --baseline "$OUT/items.csv" > /dev/null
+grep -Eq "新增 0 · 持续 [0-9]+ · 消失 0" "$OUT2/diff.md" || {
+  echo "    批次对比结果异常："; sed -n '1,6p' "$OUT2/diff.md"; exit 1
+}
+[ -s "$OUT2/diff.csv" ] || { echo "    缺少产物：diff.csv"; exit 1; }
+echo "    批次对比 OK（$(grep -o "持续 [0-9]*" "$OUT2/diff.md" | head -1)）"
+
 "$PY" scripts/metrics.py --items "$OUT/items.csv" --review data/review.csv \
   --run-at 2026-10-03T17:00:00 --out "$OUT/metrics.md" > /dev/null
 "$PY" scripts/score.py --items "$OUT/items.csv" --gold data/gold_overlap.csv \

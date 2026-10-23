@@ -43,8 +43,21 @@ class EngineGoldenTest(unittest.TestCase):
         types = {f.type for f in self.result.items.findings}
         for expected in ("缺岗未登记", "疑似重复占位", "排班表与现场不一致",
                          "版本断链或过期", "版本未确认", "缺失与未确认混同",
-                         "编号断链", "单位差异", "时间倒挂", "疑似回填"):
+                         "计划外到岗", "单位差异", "时间倒挂", "疑似回填"):
             self.assertIn(expected, types)
+
+    def test_config_typo_blocks_the_run(self):
+        """拼错一个键就等于悄悄关掉一类校验：必须 blocked，不许"尽力而为"。"""
+        broken = {"pilot": {"batch_id": "B-2026-10-03-A", "page_item_limt": 40}}
+        result = run(DATA, broken)
+        self.assertTrue(result.blocked)
+        self.assertIn("未知配置项", result.blocked_reason)
+
+    def test_unknown_anomaly_type_blocks_the_run(self):
+        broken = {"scope": {"allowed_anomaly_types": ["缺岗未登计"]}}
+        result = run(DATA, broken)
+        self.assertTrue(result.blocked)
+        self.assertIn("未知异常类型", result.blocked_reason)
 
     def test_out_of_scope_excludes_medical_and_security(self):
         joined = " ".join(self.result.excluded_shifts)

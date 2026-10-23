@@ -46,6 +46,32 @@ def c1_cross_check(shifts, checkins, positions_index: Dict[str, object], in_scop
     for row in checkins:
         by_shift.setdefault(row.get("shift_id"), []).append(row)
 
+    # 有人到岗、排班表里却没有这个班次：多半是顶班或临时调人，不是数据错误。
+    # 这类只出现在签到侧的情况以前由 C7 当成"编号断链"，语义是错的——
+    # 断链是数据问题，顶班是现场事实，得让人去认。
+    valid_ids = {s.get("shift_id") for s in shifts if s.get("shift_id")}
+    for checkin in checkins:
+        sid = checkin.get("shift_id")
+        if not sid or sid in valid_ids:
+            continue
+        person = checkin.get("person_code") or "（未登记人员）"
+        site = checkin.get("site_id") or "（未登记点位）"
+        findings.append(
+            Finding(
+                code="C1",
+                type="计划外到岗",
+                subject=sid,
+                detail=(
+                    f"签到人员 {person}、点位 {site}，但排班表里没有班次 {sid}"
+                    "（可能是顶班或临时调人，也可能排班表漏登记；需当班人确认是哪一种）"
+                ),
+                source_locator=checkin.locator,
+                occurred_at=checkin.get("occurred_at"),
+                received_at=checkin.get("received_at"),
+                suggestion=SUGGEST_VERIFY,
+            )
+        )
+
     for shift in shifts:
         sid = shift.get("shift_id")
         if sid not in in_scope:
@@ -271,18 +297,8 @@ def c7_numbering(shifts, checkins, handovers) -> List[Finding]:
             )
         )
 
+    # 签到侧的孤儿引用不在 C7 报：那是"计划外到岗"，由 C1 报（同一行不重复计数）
     valid_ids = {s.get("shift_id") for s in shifts if s.get("shift_id")}
-    for locator, ref in find_orphans(checkins, valid_ids):
-        findings.append(
-            Finding(
-                code="C7",
-                type="编号断链",
-                subject=ref,
-                detail=f"签到记录引用了不存在的班次编号 {ref}",
-                source_locator=locator,
-                suggestion=SUGGEST_REVIEW,
-            )
-        )
     for locator, ref in find_orphans(handovers, valid_ids):
         findings.append(
             Finding(

@@ -23,6 +23,13 @@ if __package__ in (None, ""):  # 允许直接 python3 运行本文件
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from volunteer_handover import __version__            # noqa: E402
+from volunteer_handover.core.diff import (  # noqa: E402
+    compute as compute_diff,
+    load_items as load_previous_items,
+    render_markdown as render_diff,
+    render_text as render_diff_text,
+    to_csv as write_diff_csv,
+)
 from volunteer_handover.core.engine import run, write_outputs  # noqa: E402
 from volunteer_handover.core.gold import load_gold, render_markdown as render_score, score  # noqa: E402
 from volunteer_handover.core.metrics import render_text as render_metrics_text             # noqa: E402
@@ -62,6 +69,11 @@ def _parse_args(argv=None):
         "--gold",
         default=None,
         help="金标标注表（如 data/gold_overlap.csv）；给了才会算召回率与精确率",
+    )
+    parser.add_argument(
+        "--baseline",
+        default=None,
+        help="上一次运行的 items.csv；给了就按「校验+类型+对象」比对，标出新增/持续/消失",
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     return parser.parse_args(argv)
@@ -125,6 +137,18 @@ def main(argv=None) -> int:
         print(f"金标比对：召回 {recall} · 命中 {scored.tp} · 漏报 {scored.fn} · 误报 {scored.fp} "
               f"· 未标注 {len(scored.unlabeled)}")
         print(f"  G1（能不能说“发现全部重叠”）：{'可以关闭' if scored.g1_ready else '还不能关闭'} → {score_path}")
+        print()
+
+    if args.baseline:
+        previous = load_previous_items(args.baseline)
+        diff_entries = compute_diff(previous, result.items.findings)
+        diff_md = Path(args.out) / "diff.md"
+        diff_md.write_text(
+            render_diff(diff_entries, str(args.baseline), f"本次批次 {result.batch_id}"), encoding="utf-8"
+        )
+        write_diff_csv(diff_entries, Path(args.out) / "diff.csv")
+        print(render_diff_text(diff_entries))
+        print(f"  对比明细：{diff_md}")
         print()
 
     for warning in result.warnings:

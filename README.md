@@ -86,7 +86,7 @@ PYTHONPATH=src python3 -m volunteer_handover.main \
 # 3) 桌面推演：一条缺项怎么从原始行走到人工确认
 PYTHONPATH=src python3 examples/demo.py
 
-# 4) 跑测试（128 个，无需 pytest）
+# 4) 跑测试（166 个，无需 pytest）
 python3 -m unittest discover -s tests -t tests
 ```
 
@@ -128,6 +128,24 @@ python3 scripts/score.py --items out/items.csv --gold data/gold_overlap.csv
 复核回填表格式与硬规则见 [docs/api.md §2.1](docs/api.md)。没有复核人、没有复核时间的行不生效——
 没人负责的"已确认"等于没确认。
 
+## 每天回看：今天和昨天比
+
+一次运行只回答"现在有什么"。现场真正要问的是"昨天那条未结项今天还在不在"：
+
+```bash
+# 昨天的清单做基线，今天的运行和它比
+PYTHONPATH=src python3 -m volunteer_handover.main --out out --baseline data/prev/items.csv
+# 得到 out/diff.md：新增 1 · 持续 17 · 消失 1
+```
+
+比对键是「校验 + 类型 + 对象」，不是编号：编号是内容指纹，同一件事补充了点位就会换号，
+拿编号做键会把"补了个细节"读成"消失了又新增"。三种结论里只有 `消失` 需要小心——
+**消失不等于已解决**，可能是文件没读到或批次换了。所以它永远单独成组，系统不会替你算成"已整改"。
+
+配置也走白名单：拼错一个键（`page_item_limt`）或写错一个异常类型，运行直接 blocked，
+并告诉你最像的键名。理由是"关掉一条校验"和"拼错一个键"在清单上长得一模一样——
+少一类异常，看上去只是"干净了一些"。
+
 ## 在 VS Code 里跑
 
 仓库带好了 `.vscode/` 配置，打开文件夹就能用，不需要改任何设置。
@@ -135,7 +153,7 @@ python3 scripts/score.py --items out/items.csv --gold data/gold_overlap.csv
 1. **打开**：`File > Open Folder…` 选这个目录。
 2. **装扩展**：右下角弹「此工作区有推荐扩展」→ 点安装。只有 `ms-python.python` 一个，
    调试器和 Pylance 会跟着装上。项目零第三方依赖，**不用建虚拟环境、不用 pip install**。
-3. **跑起来**：`Cmd+Shift+B` 跑默认构建任务（语法 + 128 个测试 + 推演 + 端到端产物），
+3. **跑起来**：`Cmd+Shift+B` 跑默认构建任务（语法 + 166 个测试 + 推演 + 端到端产物），
    终端出现「构建通过」就说明环境齐了。
 4. **看清单**：`Cmd+Shift+P` → `Tasks: Run Task` → 「运行核对并打开清单」。
 

@@ -48,7 +48,7 @@
 | 列 | 类型 | 说明 |
 |---|---|---|
 | `checkin_id` | str | 签到编号 |
-| `shift_id` | str | 引用排班；找不到即"编号断链"（C7） |
+| `shift_id` | str | 引用排班；找不到即"计划外到岗"（C1）——顶班也长这样，交给人认 |
 | `person_code` | str | 实际签到人；与排班不同即"排班表与现场不一致" |
 | `site_id` | str | 实际点位；与岗位要求点位不同即缺项 |
 | `checked_at` | ts | 签到时刻（设备时间） |
@@ -75,23 +75,25 @@ OI-1;补充冰块至 14:00;2026-10-03T14:00:00;Z0003;未结|OI-2;把对讲机交
 ```
 
 字段依次为 编号、事项、截止时间、责任人、状态。不足 5 段时**保留原始串并标记
-"格式无法判定"**，不丢弃、不猜。责任人空的未结项会报"未结项归属缺失"。
+"格式无法判定"**，不丢弃、不猜。责任人空的未结项会报"未结项归属缺失"；
+同一个交接里 `OI-1` 出现两次会报**未结项编号重复**——不然"谁负责、结没结"就成了两说。
 
 ---
 
 ## 2. 输出
 
-`write_outputs(result, out_dir)` 只写 `out/`，共 7 个文件：
+`write_outputs(result, out_dir)` 只写 `out/`，共 7 个文件（加 `--baseline` 再多 2 个，见 §2.3）：
 
 | 文件 | 内容 | 谁看 |
 |---|---|---|
 | `items.md` | 一页缺项清单（Markdown） | 现场协调员 |
-| `items.csv` | 同上，12 列，含双时间与 locator | 流程协调员 |
+| `items.csv` | 同上，14 列，含双时间与 locator | 流程协调员 |
 | `handover.md` | 交接责任清单 + 未结项 | 流程协调员 |
 | `snapshots.csv` | 每个输入文件的 sha256、行数、读取状态 | 质量负责人 |
 | `audit.csv` | 谁在什么时候读/导出/确认了什么 | 质量负责人 |
 | `metrics.md` / `metrics.csv` | 误报率、确认率、复核滞后（分母是已复核数，见 §2.1） | 业务负责人 |
 | `score.md` | 金标比对的召回率/精确率与 G1 判定（需 `--gold` 才生成） | 质量负责人 |
+| `diff.md` / `diff.csv` | 与上一次运行的差异：新增/持续/消失（需 `--baseline` 才生成） | 流程协调员 |
 
 `items.csv` 列顺序（14 列）：
 
@@ -151,6 +153,49 @@ S001,S003,否,傅景,同岗位不同人，连班不算冲突
 
 ---
 
+### 2.3 批次对比：`--baseline`
+
+```bash
+# 昨天的清单做基线，今天的运行和它比
+python3 -m volunteer_handover.main --out out --baseline data/prev/items.csv
+```
+
+比对键是 **「校验 + 类型 + 对象」**，不是 `编号`：编号是内容指纹，事实字段一改就换号，
+拿它做键会把"同一件事补充了点位"读成"消失又新增"。编号变化单独标为 `持续（内容有变）`。
+
+三种结论：
+
+| 变化 | 含义 | 人的动作 |
+|---|---|---|
+| `新增` | 这次才有 | 当班人核对是不是真发生了 |
+| `持续` | 上次也有，业务身份没变 | 接上次的复核结论，不必重新看 |
+| `消失` | 上次有、这次没有 | **不代表已解决**：可能文件没读到、换了批次、或口径变了 |
+
+`消失` 永远单独成组并带一句提醒，不并进"已整改"——把"没看见"当成"变好了"就是 F9 假状态。
+
+同一组里可能有多条（一个交接有 OI-1、OI-2 两条逾期），所以配对是逐条的：
+先按编号精确配，再按来源位置配，剩下的按顺序配；配不上的才算新增/消失。不会把两条并成一条。
+
+### 2.4 配置契约
+
+配置走白名单（`core/configschema.py` 的 `KNOWN`）：**未知键直接让运行 blocked**，并给出最像的键名。
+理由：这个项目里"关掉一条校验"和"拼错一个键"在结果上长得一样——把
+`require_confirm_status` 打成 `require_confirm_staus`，代码读到 `None`，那一整类异常就悄悄没了，
+而清单看起来只是"干净了一些"。
+
+| 段 | 允许的键 |
+|---|---|
+| `project` | `name` `version` `mode`（只能 `readonly`） |
+| `pilot` | `batch_id` `desk_dry_run` `page_item_limit` `max_review_hours` |
+| `scope` | `excluded_position_categories` `allowed_anomaly_types`（只能是 C1/C2 的异常类型） |
+| `time` | `as_of` `backfill_threshold_minutes`（可为 null） |
+| `versions` | `require_validity_window` `require_confirm_status` |
+| `boundary` | `write_apis` `outbound_channel` `auto_assign_categories` |
+| `output` | `dir` `max_page_items` |
+
+同时校验类型（整数/布尔/列表/字符串）、正数范围、`time.as_of` 能否解析。
+新增配置必须同时改 `configschema.KNOWN` 与 `config/default.yaml`，测试会盯着两边一致。
+
 ## 3. 模块接口
 
 ```python
@@ -194,6 +239,7 @@ PYTHONPATH=src python3 -m volunteer_handover.main [选项]
   --json                  输出机器可读摘要
   --review FILE           人工复核回填表（如 data/review.csv）；给了才算误报率/确认率
   --gold FILE             金标标注表（如 data/gold_overlap.csv）；给了才算召回率
+  --baseline FILE         上次运行的 items.csv；给了就出 diff.md/diff.csv（新增/持续/消失）
   --run-at ISO            清单生成时间；回放历史批次时给出，否则复核滞后会算出负数
   --simulate-failure FILE 故意让某个输入不可读，用于验收 C8（可重复）
   --version               版本号

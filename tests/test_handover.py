@@ -101,6 +101,34 @@ class BuildChecklistTest(unittest.TestCase):
         self.assertFalse(hasattr(checks[0], "is_complete"))
 
 
+class DuplicateItemIdTest(unittest.TestCase):
+    def test_same_item_id_twice_is_flagged(self):
+        """OI-1 出现两次时，"谁负责、结没结"会变成两说：保留原样，但必须标出来。"""
+        checks = build_checklist(
+            [H(2, open_items="OI-1;甲;2026-10-03T20:00:00;Z2;未结|OI-1;乙;2026-10-03T20:00:00;Z3;未结")],
+            {"S001": S(2)},
+            AS_OF,
+        )
+        self.assertTrue(any("编号重复" in f for f in checks[0].flags), checks[0].flags)
+
+    def test_duplicate_id_becomes_its_own_type(self):
+        checks = build_checklist(
+            [H(2, open_items="OI-1;甲;2026-10-03T20:00:00;Z2;未结|OI-1;乙;2026-10-03T20:00:00;Z3;未结")],
+            {"S001": S(2)},
+            AS_OF,
+        )
+        types = {f.type for f in checklist_findings(checks)}
+        self.assertEqual(types, {"未结项编号重复"})
+
+    def test_distinct_item_ids_are_quiet(self):
+        checks = build_checklist(
+            [H(2, open_items="OI-1;甲;2026-10-03T20:00:00;Z2;未结|OI-2;乙;2026-10-03T20:00:00;Z3;未结")],
+            {"S001": S(2)},
+            AS_OF,
+        )
+        self.assertEqual(checks[0].flags, [])
+
+
 class FindingsTest(unittest.TestCase):
     def test_flags_become_traceable_findings(self):
         checks = build_checklist([H(2, accepted_at="")], {"S001": S(2)}, AS_OF)

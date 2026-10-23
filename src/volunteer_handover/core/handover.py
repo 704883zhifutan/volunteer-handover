@@ -149,6 +149,15 @@ def build_checklist(handover_rows, shift_index: Dict[str, object], as_of: Option
             if shift_row.get("version_no") != check.version_no:
                 check.flags.append(f"交接版本({check.version_no})≠排班版本({shift_row.get('version_no')})")
 
+        # 同一个交接里 OI-1 出现两次：谁负责、结没结都会变成两说（f43 要求保留原样，但不许装看不见）
+        seen_ids: Dict[str, int] = {}
+        for item in check.items:
+            if item.item_id and item.item_id != "?":
+                seen_ids[item.item_id] = seen_ids.get(item.item_id, 0) + 1
+        for item_id, times in seen_ids.items():
+            if times > 1:
+                check.flags.append(f"{item_id} 编号重复（{times} 次）")
+
         for item in check.items:
             if item.status == "格式无法判定":
                 check.flags.append(f"{item.item_id} 未结项格式无法判定")
@@ -171,7 +180,9 @@ def checklist_findings(checks: List[HandoverCheck]) -> List[Finding]:
     for c in checks:
         for flag in c.flags:
             kind = "交接确认链缺失"
-            if "版本" in flag:
+            if "编号重复" in flag:
+                kind = "未结项编号重复"
+            elif "版本" in flag:
                 kind = "版本断链或过期"
             elif "逾期" in flag:
                 kind = "未确认项超时"

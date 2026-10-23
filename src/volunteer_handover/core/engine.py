@@ -16,6 +16,7 @@ from typing import Dict, List, Optional
 from ..utils.logutil import AuditLog
 from .boundary import Boundary
 from .checks import all_checks
+from .configschema import describe as describe_config_problems, validate as validate_config
 from .handover import HandoverCheck, build_checklist, render_markdown as render_handover
 from .items import ItemSheet
 from .loader import Dataset, index_by, load_dataset
@@ -83,6 +84,7 @@ def run(data_dir, config: Optional[dict] = None, review_path=None, run_at: str =
     """run_at = 清单生成时间。默认取当前时间；回放历史批次时应显式给出，
     否则"复核滞后"会用今天去减去年的复核时间，算出没有意义的负数。"""
     cfg = config or {}
+    config_problems = validate_config(cfg)
     audit = AuditLog()
     run_at = run_at or datetime.now().isoformat(timespec="seconds")
 
@@ -137,6 +139,8 @@ def run(data_dir, config: Optional[dict] = None, review_path=None, run_at: str =
     warnings.extend(dataset.column_warnings())
 
     blocked_reason = ""
+    if config_problems:
+        blocked_reason = describe_config_problems(config_problems)
     if boundary.violations():
         blocked_reason = "配置中出现禁用能力：" + "、".join(k for k, _ in boundary.violations())
     bad_columns = dataset.blocked_columns()

@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: 测试 / Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.11", "3.12"]
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 语法与导入
+        run: |
+          python scripts/check_syntax.py
+          PYTHONPATH=src python -c "import volunteer_handover.main"
+
+      - name: 单元测试
+        run: python -m unittest discover -s tests -t tests -v
+
+      - name: 桌面推演
+        run: PYTHONPATH=src python examples/demo.py
+
+      - name: 端到端核对并产出清单
+        run: PYTHONPATH=src python -m volunteer_handover.main --out out
+
+      - name: 校验产物
+        run: |
+          for f in items.csv items.md handover.md snapshots.csv audit.csv; do
+            test -s "out/$f" || { echo "缺少产物: $f"; exit 1; }
+          done
+          echo "--- items.md（前 30 行）---"
+          head -30 out/items.md
+
+      - name: 上传产物（供人工复核）
+        uses: actions/upload-artifact@v4
+        with:
+          name: out-py${{ matrix.python-version }}
+          path: out/
+          retention-days: 7
+
+  boundary:
+    name: 边界守卫
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 边界不能只写在文档里：这里直接扫源码，出现网络/发送类依赖就失败。
+      - name: 源码不得引入网络或发送能力
+        run: |
+          if grep -rEn '^\s*(import|from)\s+(requests|urllib|http\.client|smtplib|socket|aiohttp|httpx)' src/ ; then
+            echo "::error::发现网络/发送类导入，只读工具不允许"
+            exit 1
+          fi
+          echo "未发现网络/发送类导入"
+
+      - name: 配置里的能力必须为空
+        run: python scripts/check_boundary.py
+
+      - name: 三门禁状态（仅提示，不阻塞）
+        continue-on-error: true
+        run: |
+          echo "未关闭门禁："
+          grep -n '^- \[ \]' docs/gates.md || echo "（全部已关闭）"

@@ -1,0 +1,39 @@
+# 非机密配置：默认参数。机密值走环境变量，不进仓。
+project:
+  name: volunteer-handover
+  version: 0.1.0
+  mode: readonly          # 唯一允许的模式；写回通道在本项目里不存在
+
+pilot:
+  batch_id: "B-2026-10-03-A"
+  desk_dry_run: true      # W0 桌面推演：只用虚构样本
+  page_item_limit: 40     # 一页装不下说明筛选规则错了，不是要加页
+  max_review_hours: 4     # 每周业务侧投入上限（超出须重新评估）
+
+scope:
+  excluded_position_categories:    # 医疗/安保不进入试点，也不自动指派
+    - 医疗
+    - 安保
+  allowed_anomaly_types:
+    - 缺岗未登记
+    - 疑似重复占位
+    - 排班表与现场不一致
+    - 未确认项超时
+
+time:
+  as_of: "2026-10-03T16:00:00"
+  # H1 未核实：不预设延迟阈值；null 表示只标记“疑似回填”，不判定是否超阈值
+  backfill_threshold_minutes: null
+
+versions:
+  require_validity_window: true
+  require_confirm_status: true
+
+boundary:
+  write_apis: []
+  outbound_channel: none
+  auto_assign_categories: []
+
+output:
+  dir: out
+  max_page_items: 40

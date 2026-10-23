@@ -1,0 +1,6 @@
+position_id,position_name,category,required_skill,site_id
+P01,检录引导,通用,SKILL-GUIDE,S-A
+P02,咨询台,通用,SKILL-INFO,S-A
+P03,医疗点值守,医疗,SKILL-FA,S-B
+P04,安保巡视,安保,SKILL-SEC,S-C
+P05,补给站,通用,SKILL-SUP,S-D
